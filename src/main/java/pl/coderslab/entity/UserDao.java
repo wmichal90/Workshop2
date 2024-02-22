@@ -46,17 +46,12 @@ public class UserDao {
     static {
         DELETE_USER_BY_ID_QUERY = "DELETE FROM users WHERE id = ?";
     }
-    private static final String UPDATE_USERNAME_BY_USER_ID =
-            "UPDATE users SET username = ? WHERE id = ?";
 
-    private static final String UPDATE_EMAIL_BY_USER_ID =
-            "UPDATE users SET email = ? WHERE id = ?";
+    private static final String SELECT_ALL_USERS_QUERY;
 
-    private static final String UPDATE_EMAIL_AND_USERNAME_BY_USER_ID =
-            "UPDATE users set email = ?, username = ? WHERE id = ?";
-
-    private static final String DELETE_USER_QUERY =
-            "DELETE from users WHERE id = ?";
+    static {
+        SELECT_ALL_USERS_QUERY = "SELECT * FROM users";
+    }
 
     public UserDao() {
     }
@@ -107,6 +102,21 @@ public class UserDao {
             }
         } else {
             return null;
+        }
+    }
+
+    private void printUsers(User [] users){
+        String [] columns = new String[]{"id", "mail", "username", "password"};
+        for (String column: columns){
+            System.out.print(column + "\t|\t");
+        }
+        System.out.println();
+        for (User user: users){
+            System.out.print(user.getId() + "\t|\t" +
+                    user.getEmail() + "\t|\t" +
+                    user.getUserName() + "\t|\t" +
+                    user.getPassword());
+            System.out.println();
         }
     }
 
@@ -223,6 +233,19 @@ public class UserDao {
             }
         } else {
             System.out.printf("User of id = %s doesn't exist in database, so it cannot be deleted!%n", userId);
+        }
+    }
+
+    public User [] findAll(){
+        try (Connection conn = DbUtil.connect()){
+            PreparedStatement statement =
+                    conn.prepareStatement(SELECT_ALL_USERS_QUERY);
+            User [] users =  listUsers(statement);
+            this.printUsers(users);
+            return users;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return null;
         }
     }
 

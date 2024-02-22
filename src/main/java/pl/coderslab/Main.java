@@ -48,7 +48,9 @@ public class Main {
             System.out.println(checkMichalTest);
         }
 
-        daoHandler.delete(13);
+        daoHandler.delete(8);
+
+        User[] allUsers = daoHandler.findAll();
 
     }
 }
